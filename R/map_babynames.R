@@ -77,5 +77,5 @@ map_babynames <- function(nam, filename = NULL, start_year = 2000, stop_year = 2
         path <- paste(filename, ".gif")
     } else  {path <- filename}
 
-    gganimate::gganimate(g, path, ani.width = 560, ani.height = 360, interval = interval, ...)
+    gganimate::gganimate(g, path, ani.width = ani.width, ani.height = ani.height, interval = interval, ...)
 }
