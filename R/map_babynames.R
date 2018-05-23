@@ -17,8 +17,7 @@
 #' @export
 map_babynames <- function(nam, filename = NULL, start_year = 2000, stop_year = 2016, raleway = FALSE,
                           ani.width = 560, ani.height = 360, interval = .2, proportion = FALSE, ...) {
-    library(ggplot2)
-    library(dplyr)
+
 
     wrap90 <- scales::wrap_format(90)
 
@@ -66,15 +65,15 @@ map_babynames <- function(nam, filename = NULL, start_year = 2000, stop_year = 2
             axis.text = element_blank())
 
     if(raleway == TRUE) {
-        library(bplots) # devtools::install_github("brooke-watson/bplots")
+        #library(bplots) # devtools::install_github("brooke-watson/bplots")
         # download the raleway font for theme_raleway() to work: https://fonts.google.com/?selection.family=Raleway
-        g <- g + theme_blank(element_text(family = "Raleway")) + theme_fancy()
+        g <- g + theme_blank(element_text(family = "Raleway")) + bplots::theme_fancy()
     }
 
     if(is.null(filename)) {
         path <- paste(nam, ".gif")
     } else if(!grepl(".gif$", "filename.gif")) {
-        path <- paste(filename, ".gif")
+        path <- paste0(filename, ".gif")
     } else  {path <- filename}
 
     gganimate::gganimate(g, path, ani.width = ani.width, ani.height = ani.height, interval = interval, ...)
