@@ -67,7 +67,7 @@ map_babynames <- function(nam, filename = NULL, start_year = 2000, stop_year = 2
     if(raleway == TRUE) {
         #library(bplots) # devtools::install_github("brooke-watson/bplots")
         # download the raleway font for theme_raleway() to work: https://fonts.google.com/?selection.family=Raleway
-        g <- g + theme_blank(element_text(family = "Raleway")) + bplots::theme_fancy()
+        g <- g + bplots::theme_blank(element_text(family = "Raleway")) + bplots::theme_fancy()
     }
 
     if(is.null(filename)) {
