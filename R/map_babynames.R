@@ -71,7 +71,7 @@ map_babynames <- function(nam, filename = NULL, start_year = 2000, stop_year = 2
     }
 
     if(is.null(filename)) {
-        path <- paste(nam, ".gif")
+        path <- paste0(nam, ".gif")
     } else if(!grepl(".gif$", "filename.gif")) {
         path <- paste0(filename, ".gif")
     } else  {path <- filename}
