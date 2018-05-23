@@ -11,17 +11,21 @@
 #' @param ani.width, width of the animation, passed to gganimate
 #' @param ani.height, height of the animation, passed to gganimate
 #' @param interval, time in seconds spent on each frame, passed to gganimate
+#' @param proportion, whether to display raw numbers or proportions. Defaults to false.
 #' @param ..., other args passed to gganimate
 #'
 #' @export
 map_babynames <- function(nam, filename = NULL, start_year = 2000, stop_year = 2016, raleway = FALSE,
-                          ani.width = 560, ani.height = 360, interval = .2, ...) {
+                          ani.width = 560, ani.height = 360, interval = .2, proportion = FALSE, ...) {
     library(ggplot2)
     library(dplyr)
 
     wrap90 <- scales::wrap_format(90)
 
     # if(!exists("statebabynames", envir = globalenv())) {data("statebabynames")}
+    numberdf <- statebabynames %>% group_by(state, year) %>%
+      summarize(total = sum(n)) %>%
+      filter(year >= start_year & year <= stop_year)
 
     namedf <- statebabynames %>%
     filter(name == nam & year >= start_year & year <= stop_year)
@@ -32,6 +36,7 @@ map_babynames <- function(nam, filename = NULL, start_year = 2000, stop_year = 2
         unique()
 
     namedf <- full_join(namedf, statebabynames, by = c("state", "year"))
+    if(proportion) namedf <- full_join(namedf, numberdf, by = c("state", "year"))
 
     state_lookup = dplyr::data_frame(state = state.abb, region = state.name)
 
@@ -41,10 +46,15 @@ map_babynames <- function(nam, filename = NULL, start_year = 2000, stop_year = 2
         mutate(region = tolower(region)) %>%
         full_join(usa_map, by = "region")
 
+    if(proportion) state_map <- state_map %>% mutate(proportion = n/total)
+
     ti <- paste0("Babies named ", nam, " born in each state," )
 
     g <- ggplot() +
-        geom_polygon(data = state_map, aes(fill = n, x = long, y = lat, group = group, frame = year)) +
+        if(proportion) {geom_polygon(data = state_map, aes(fill = proportion, x = long, y = lat, group = group, frame = year))} else {
+        geom_polygon(data = state_map, aes(fill = n, x = long, y = lat, group = group, frame = year))
+        }
+    g <- g +
         scale_fill_gradient(low = "lightblue", high = "darkblue", na.value = "lightgray", guide = "legend")  +
         ggtitle(ti) +
         labs(caption = wrap90("Data from the Social Security Administration. To protect privacy, if a name has less than 5 occurrences for a year of birth in any state, those names are not recorded. The sum of the state counts is thus less than the national count.")) +
@@ -67,5 +77,5 @@ map_babynames <- function(nam, filename = NULL, start_year = 2000, stop_year = 2
         path <- paste(filename, ".gif")
     } else  {path <- filename}
 
-    gganimate::gganimate(g, path, ani.width = 560, ani.height = 360, interval = .2, ...)
+    gganimate::gganimate(g, path, ani.width = 560, ani.height = 360, interval = interval, ...)
 }
